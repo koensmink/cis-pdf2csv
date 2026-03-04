@@ -1,40 +1,4 @@
-from __future__ import annotations
-
-import argparse
-import csv
-import json
-import re
-from pathlib import Path
-from typing import List
-
-from rich.console import Console
-from rich.table import Table
-
-from .parser import parse_controls
-from .schema import ControlRecord
-
-console = Console()
-
-
-def _clean_csv_value(v):
-    """
-    Normalize values so multiline text (Audit/Remediation/etc.)
-    does not break CSV rows in terminal/Excel.
-    """
-    if v is None:
-        return ""
-
-    if not isinstance(v, str):
-        return v
-
-    # normalize line endings
-    v = v.replace("\r\n", "\n").replace("\r", "\n")
-
-    # convert newlines to visible tokens
-    v = v.replace("\n", "\\n")
-
-    # collapse weird whitespace
-    v = re.sub(r"[ \t]+", " ", v)
+raise SystemExit(main())    args = p.parse_args(argv)    v = re.sub(r"[ \t]+", " ", v)
 
     return v.strip()
 
