@@ -23,7 +23,10 @@ SECTION_HEADINGS = [
 # 1.1.1 (L1) Ensure 'Enforce password history' is set to '24 or more password(s)' (Automated)
 # 2.2.3 (L1) Ensure 'Access this computer...' (MS only) (Automated)
 RE_HEADER = re.compile(
-    r"^(?P<id>\d+(?:\.\d+)+)\s+\((?P<profile>L1|L2|NG)\)\s+(?P<title>.+?)\s+\((?P<assessment>Automated|Manual)\)\s*$"
+    r"^(?P<id>\d+(?:\.\d+)+)\s*\((?P<profile>L1|L2|NG)\)\s+"
+    r"(?P<title>.+?)"
+    r"(?:\s+\((?P<assessment>Automated|Manual)\))?"
+    r"(?:\s+\([^)]+\))*\s*$"
 )
 
 RE_BENCHMARK_META = re.compile(
