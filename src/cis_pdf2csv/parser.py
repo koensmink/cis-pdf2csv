@@ -18,15 +18,11 @@ SECTION_HEADINGS = [
     "References",
 ]
 
-# Matches a CIS recommendation header line.
-# Examples in PDFs:
-# 1.1.1 (L1) Ensure 'Enforce password history' is set to '24 or more password(s)' (Automated)
-# 2.2.3 (L1) Ensure 'Access this computer...' (MS only) (Automated)
 RE_HEADER = re.compile(
-    r"^(?P<id>\d+(?:\.\d+)+)\s*\((?P<profile>L1|L2|NG)\)\s+"
-    r"(?P<title>.+?)"
-    r"(?:\s+\((?P<assessment>Automated|Manual)\))?"
-    r"(?:\s+\([^)]+\))*\s*$"
+    r"^(?P<id>\d+(?:\.\d+)+)\s+"
+    r"(?P<title>.+?)\s+"
+    r"\((?P<assessment>Automated|Manual)\)"
+    r"(?:\s+\.*\s*\d+)?\s*$"
 )
 
 RE_BENCHMARK_META = re.compile(
