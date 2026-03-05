@@ -3,16 +3,14 @@
 Dit project gebruikt het **STRIDE threat model** om potentiële risico's
 te analyseren.
 
-  Type   Betekenis
-  ------ --------------------------------------------
-  S      Spoofing (identiteitsvervalsing)
-  T      Tampering (manipulatie van data)
-  R      Repudiation (ontkennen van acties)
-  I      Information Disclosure (informatie lekken)
-  D      Denial of Service
-  E      Elevation of Privilege
-
-------------------------------------------------------------------------
+| Type | Betekenis |
+|------|-----------|
+| S | Spoofing (identiteitsvervalsing) |
+| T | Tampering (manipulatie van data) |
+| R | Repudiation (ontkennen van acties) |
+| I | Information Disclosure (informatie lekken) |
+| D | Denial of Service |
+| E | Elevation of Privilege |
 
 # STRIDE Analyse
 
