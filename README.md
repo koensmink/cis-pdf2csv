@@ -28,6 +28,20 @@ docker run --rm -v "$PWD:/work" -w /work cis-pdf2csv \
   python -m cis_pdf2csv ./CIS_Microsoft_Windows_Server_2025_Benchmark_v1.0.0.pdf -p L1 -o out.csv
 ```
 
+```docker-run
+docker run --rm \
+  --read-only \
+  --tmpfs /tmp:rw,noexec,nosuid,size=256m \
+  --tmpfs /home/appuser:rw,noexec,nosuid,size=256m \
+  --security-opt no-new-privileges \
+  --cap-drop ALL \
+  -v "$PWD:/work:ro" \
+  -v "$PWD/out:/out:rw" \
+  -w /work \
+  cis-pdf2csv \
+  ./CIS_Microsoft_Windows_Server_2025_Benchmark_v2.0.0.pdf -p L1 -o /out/out_l1.csv
+```
+
 ## Usage
 ```bash
 python -m cis_pdf2csv <pdf1> [pdf2 ...] -p L1 -o out.csv
