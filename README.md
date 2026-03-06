@@ -243,19 +243,6 @@ See `SECURITY.md` for the STRIDE threat model.
 
 ---
 
-# STRIDE threat model
-
-| Type | Meaning |
-|------|--------|
-S | Spoofing |
-T | Tampering |
-R | Repudiation |
-I | Information Disclosure |
-D | Denial of Service |
-E | Elevation of Privilege |
-
----
-
 # Limitations
 
 - Currently optimized for **Windows Server CIS benchmarks**
