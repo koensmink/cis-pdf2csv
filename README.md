@@ -59,6 +59,23 @@ python -m cis_pdf2csv <pdf1> [pdf2 ...] -p L1 -o out.csv
 python -m cis_pdf2csv <pdf> -p L1 -o out.jsonl --format jsonl
 ```
 
+## Diff
+Export 1:
+```bash
+docker run --rm -v "$PWD:/work" -w /work cis-pdf2csv \
+./CIS_Microsoft_Windows_Server_2025_Benchmark_v1.0.0.pdf -p L1 -o ws2025_v1_l1.jsonl --format jsonl
+```
+Export 2: 
+```bash
+docker run --rm -v "$PWD:/work" -w /work cis-pdf2csv \
+./CIS_Microsoft_Windows_Server_2025_Benchmark_v2.0.0.pdf -p L1 -o ws2025_v2_l1.jsonl --format jsonl
+``
+Diff check:
+```bash
+docker run --rm -v "$PWD:/work" -w /work --entrypoint python cis-pdf2csv \
+-m cis_pdf2csv.diff ws2025_v1_l1.jsonl ws2025_v2_l1.jsonl -o changes.csv
+```
+
 ## GitHub Actions
 Zie `.github/workflows/parse-cis.yml`. Gebruik bij voorkeur een **self-hosted runner** met toegang tot de PDF's (bijv. via interne storage).
 
