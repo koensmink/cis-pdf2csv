@@ -87,6 +87,19 @@ def _normalize_heading(line: str) -> str:
     return line.strip().rstrip(":").strip().lower()
 
 
+def _flatten_lines(lines: List[str]) -> Optional[str]:
+    """
+    Join multiline section text into a single normalized line.
+    This avoids visible \\n characters in CSV / Excel output.
+    """
+    if not lines:
+        return None
+
+    text = " ".join(lines)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+
 def _looks_like_control_start(line: str) -> bool:
     """
     Heuristic: does this line look like the start of a CIS control header?
@@ -114,7 +127,7 @@ def _consume_multiline_header(
       - the next line looks like a new control start, or
       - a known body section heading starts.
     """
-    page, line = lines[start_index]
+    _, line = lines[start_index]
     candidate = line
 
     if "(Automated)" in candidate or "(Manual)" in candidate:
@@ -317,7 +330,7 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
                 page_end=page,
                 source_pdf_sha256=pdf_hash,
                 extracted_at_utc=_utc_now(),
-                parser_version="0.4.0",
+                parser_version="0.4.1",
                 block_text_sha256="",
             )
 
@@ -407,12 +420,12 @@ def _extract_sections(block_text: str) -> Dict[str, Optional[str]]:
         sections_accumulator[current_key].append(ln)
 
     return {
-        "applicability": "\n".join(sections_accumulator["applicability"]).strip() or None,
-        "description": "\n".join(sections_accumulator["description"]).strip() or None,
-        "rationale": "\n".join(sections_accumulator["rationale"]).strip() or None,
-        "impact": "\n".join(sections_accumulator["impact"]).strip() or None,
-        "audit": "\n".join(sections_accumulator["audit"]).strip() or None,
-        "remediation": "\n".join(sections_accumulator["remediation"]).strip() or None,
-        "default_value": "\n".join(sections_accumulator["default_value"]).strip() or None,
-        "references": "\n".join(sections_accumulator["references"]).strip() or None,
+        "applicability": _flatten_lines(sections_accumulator["applicability"]),
+        "description": _flatten_lines(sections_accumulator["description"]),
+        "rationale": _flatten_lines(sections_accumulator["rationale"]),
+        "impact": _flatten_lines(sections_accumulator["impact"]),
+        "audit": _flatten_lines(sections_accumulator["audit"]),
+        "remediation": _flatten_lines(sections_accumulator["remediation"]),
+        "default_value": _flatten_lines(sections_accumulator["default_value"]),
+        "references": _flatten_lines(sections_accumulator["references"]),
     }
