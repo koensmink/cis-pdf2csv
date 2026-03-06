@@ -214,30 +214,30 @@ def write_report(rows: List[dict], out_path: Path) -> None:
             lines.append(f"- `{field}`: {count}")
         lines.append("")
 
-        lines.append("## Voorbeelden van gewijzigde controls")
+        lines.append("## Overzicht van alle gewijzigde controls")
         lines.append("")
-        for row in changed[:20]:
+        for row in changed:
             lines.append(
                 f"- `{row['control_id']}` ({row['profile']}): "
-                f"{row.get('fields_changed','')}"
+                f"{row.get('fields_changed', '')}"
             )
         lines.append("")
 
     if added:
-        lines.append("## Eerste toegevoegde controls")
+        lines.append("## Overzicht van alle toegevoegde controls")
         lines.append("")
-        for row in added[:10]:
+        for row in added:
             lines.append(
-                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_new','')}"
+                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_new', '')}"
             )
         lines.append("")
 
     if removed:
-        lines.append("## Eerste verwijderde controls")
+        lines.append("## Overzicht van alle verwijderde controls")
         lines.append("")
-        for row in removed[:10]:
+        for row in removed:
             lines.append(
-                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_old','')}"
+                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_old', '')}"
             )
         lines.append("")
 
@@ -304,7 +304,7 @@ def write_full_report(rows: List[dict], out_path: Path) -> None:
         lines.append("")
         for row in added:
             lines.append(
-                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_new','')}"
+                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_new', '')}"
             )
         lines.append("")
 
@@ -313,7 +313,7 @@ def write_full_report(rows: List[dict], out_path: Path) -> None:
         lines.append("")
         for row in removed:
             lines.append(
-                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_old','')}"
+                f"- `{row['control_id']}` ({row['profile']}): {row.get('title_old', '')}"
             )
         lines.append("")
 
