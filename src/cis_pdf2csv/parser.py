@@ -10,13 +10,33 @@ import fitz
 SECTION_HEADINGS = [
     "Profile Applicability",
     "Description",
+    "Rationale",
     "Rationale Statement",
+    "Impact",
     "Impact Statement",
+    "Audit",
     "Audit Procedure",
+    "Remediation",
     "Remediation Procedure",
     "Default Value",
     "References",
 ]
+
+
+SECTION_CANONICAL_MAP = {
+    "profile applicability": "applicability",
+    "description": "description",
+    "rationale": "rationale",
+    "rationale statement": "rationale",
+    "impact": "impact",
+    "impact statement": "impact",
+    "audit": "audit",
+    "audit procedure": "audit",
+    "remediation": "remediation",
+    "remediation procedure": "remediation",
+    "default value": "default_value",
+    "references": "references",
+}
 
 
 RE_HEADER = re.compile(
@@ -56,6 +76,17 @@ def _normalize_text(text: str) -> str:
     return text
 
 
+def _normalize_heading(line: str) -> str:
+    """
+    Normalize heading text so variants like:
+    - 'Rationale'
+    - 'Rationale:'
+    - 'Rationale Statement'
+    all become comparable.
+    """
+    return line.strip().rstrip(":").strip().lower()
+
+
 def find_body_start_page(pdf_path: str) -> int:
     """
     Detect where the actual control body begins.
@@ -65,10 +96,15 @@ def find_body_start_page(pdf_path: str) -> int:
 
     needles = [
         "Profile Applicability",
-        "Audit Procedure",
-        "Remediation Procedure",
+        "Description",
+        "Rationale",
         "Rationale Statement",
+        "Impact",
         "Impact Statement",
+        "Audit",
+        "Audit Procedure",
+        "Remediation",
+        "Remediation Procedure",
         "Default Value",
         "References",
     ]
@@ -106,7 +142,6 @@ def extract_benchmark_meta(pdf_path: str) -> Tuple[str, str, str]:
     date = ""
 
     for idx, ln in enumerate(lines[:50]):
-
         m = RE_BENCHMARK_META.match(ln)
         if m:
             name = f"CIS Microsoft Windows Server {m.group('product')} Benchmark"
@@ -120,7 +155,6 @@ def extract_benchmark_meta(pdf_path: str) -> Tuple[str, str, str]:
 
 
 def _split_title_applicability(raw_title: str):
-
     applicability = []
     title = raw_title
 
@@ -137,7 +171,6 @@ def _split_title_applicability(raw_title: str):
 
 
 def _profile_from_applicability(text: Optional[str]):
-
     if not text:
         return "Unknown"
 
@@ -167,7 +200,6 @@ def _is_real_control(sections: Dict[str, Optional[str]]) -> bool:
 
 
 def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[Dict]:
-
     with open(pdf_path, "rb") as f:
         pdf_hash = sha256_bytes(f.read())
 
@@ -182,13 +214,10 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
     current_end_page: Optional[int] = None
 
     for page, line in iter_pdf_lines(pdf_path, start_page):
-
         m = RE_HEADER.match(line)
 
         if m:
-
             if current:
-
                 block_text = "\n".join(current_lines).strip()
 
                 current["page_end"] = current_end_page or current["page_start"]
@@ -197,7 +226,6 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
                 sections = _extract_sections(block_text)
 
                 if _is_real_control(sections):
-
                     current.update(sections)
 
                     current["profile"] = _profile_from_applicability(
@@ -225,7 +253,7 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
                 page_end=page,
                 source_pdf_sha256=pdf_hash,
                 extracted_at_utc=_utc_now(),
-                parser_version="0.2.0",
+                parser_version="0.3.0",
                 block_text_sha256="",
             )
 
@@ -233,13 +261,11 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
             current_end_page = page
 
         else:
-
             if current:
                 current_lines.append(line)
                 current_end_page = page
 
     if current:
-
         block_text = "\n".join(current_lines).strip()
 
         current["page_end"] = current_end_page or current["page_start"]
@@ -248,7 +274,6 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
         sections = _extract_sections(block_text)
 
         if _is_real_control(sections):
-
             current.update(sections)
 
             current["profile"] = _profile_from_applicability(
@@ -258,7 +283,6 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
             controls.append(current)
 
     if profile_filter:
-
         pf = profile_filter.upper()
 
         controls = [
@@ -269,57 +293,58 @@ def parse_controls(pdf_path: str, profile_filter: Optional[str] = None) -> List[
 
 
 def _utc_now():
-
     import datetime
 
     return datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
 
 
 def _extract_sections(block_text: str) -> Dict[str, Optional[str]]:
+    """
+    Extract CIS control sections from a control text block.
 
+    Supports both older section names:
+    - Rationale Statement
+    - Impact Statement
+    - Audit Procedure
+    - Remediation Procedure
+
+    and newer section names:
+    - Rationale
+    - Impact
+    - Audit
+    - Remediation
+    """
     lines = [ln.strip() for ln in block_text.splitlines() if ln.strip()]
 
-    idxs: List[Tuple[int, str]] = []
+    sections_accumulator: Dict[str, List[str]] = {
+        "applicability": [],
+        "description": [],
+        "rationale": [],
+        "impact": [],
+        "audit": [],
+        "remediation": [],
+        "default_value": [],
+        "references": [],
+    }
 
-    for i, ln in enumerate(lines):
+    current_key = "description"
 
-        for h in SECTION_HEADINGS:
+    for ln in lines:
+        normalized = _normalize_heading(ln)
 
-            if ln == h or ln.startswith(h + ":"):
-                idxs.append((i, h))
-                break
+        if normalized in SECTION_CANONICAL_MAP:
+            current_key = SECTION_CANONICAL_MAP[normalized]
+            continue
 
-    if not idxs:
-
-        return {
-            "applicability": None,
-            "description": block_text,
-            "rationale": None,
-            "impact": None,
-            "audit": None,
-            "remediation": None,
-            "default_value": None,
-            "references": None,
-        }
-
-    idxs.sort(key=lambda x: x[0])
-
-    sections: Dict[str, str] = {}
-
-    for n, (i, h) in enumerate(idxs):
-
-        start = i + 1
-        end = idxs[n + 1][0] if n + 1 < len(idxs) else len(lines)
-
-        sections[h] = "\n".join(lines[start:end]).strip()
+        sections_accumulator[current_key].append(ln)
 
     return {
-        "applicability": sections.get("Profile Applicability"),
-        "description": sections.get("Description"),
-        "rationale": sections.get("Rationale Statement"),
-        "impact": sections.get("Impact Statement"),
-        "audit": sections.get("Audit Procedure"),
-        "remediation": sections.get("Remediation Procedure"),
-        "default_value": sections.get("Default Value"),
-        "references": sections.get("References"),
+        "applicability": "\n".join(sections_accumulator["applicability"]).strip() or None,
+        "description": "\n".join(sections_accumulator["description"]).strip() or None,
+        "rationale": "\n".join(sections_accumulator["rationale"]).strip() or None,
+        "impact": "\n".join(sections_accumulator["impact"]).strip() or None,
+        "audit": "\n".join(sections_accumulator["audit"]).strip() or None,
+        "remediation": "\n".join(sections_accumulator["remediation"]).strip() or None,
+        "default_value": "\n".join(sections_accumulator["default_value"]).strip() or None,
+        "references": "\n".join(sections_accumulator["references"]).strip() or None,
     }
