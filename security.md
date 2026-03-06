@@ -1,17 +1,15 @@
-## Vulnerability scanning
+## Container vulnerability scanning
 
-Container images may report OS-level vulnerabilities originating from the base image.
+Image scans may report vulnerabilities originating from the base image (Debian slim).
 
-At the time of release these vulnerabilities have **no upstream fixes available**.
+These are typically classified as:
 
-The container runtime is hardened using:
+- OS library vulnerabilities
+- No upstream fix available
 
-- non-root user
-- read-only filesystem
-- dropped capabilities
-- no-new-privileges
+The container is hardened to reduce exploitability.
 
-When upstream patches become available the base image will be updated.
+Base images are periodically updated when upstream fixes are released.
 
 # Threat Model (STRIDE)
 
