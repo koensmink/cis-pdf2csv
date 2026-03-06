@@ -22,12 +22,21 @@ python -m cis_pdf2csv --help
 ```
 
 ### Docker
+Docker build (init): 
+
 ```bash
 docker build -t cis-pdf2csv .
 docker run --rm -v "$PWD:/work" -w /work cis-pdf2csv \
   python -m cis_pdf2csv ./CIS_Microsoft_Windows_Server_2025_Benchmark_v1.0.0.pdf -p L1 -o out.csv
 ```
+Docker (re)build: 
 
+```bash
+docker build --no-cache -t cis-pdf2csv .
+docker run --rm -v "$PWD:/work" -w /work cis-pdf2csv \
+  python -m cis_pdf2csv ./CIS_Microsoft_Windows_Server_2025_Benchmark_v1.0.0.pdf -p L1 -o out.csv
+```
+Docker run (hardened):
 ```docker-run
 docker run --rm \
   --read-only \
@@ -42,7 +51,7 @@ docker run --rm \
   ./CIS_Microsoft_Windows_Server_2025_Benchmark_v2.0.0.pdf -p L1 -o /out/out_l1.csv
 ```
 
-## Usage
+## Python usage
 ```bash
 python -m cis_pdf2csv <pdf1> [pdf2 ...] -p L1 -o out.csv
 python -m cis_pdf2csv <pdf> -p L1 -o out.jsonl --format jsonl
