@@ -15,3 +15,4 @@ dependencies = [
 
 [project.scripts]
 cis-pdf2csv = "cis_pdf2csv.cli:main"
+cis-intune-map = "cis_pdf2csv.intune_mapper.cli:main"
