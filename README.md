@@ -84,12 +84,12 @@ cis-pdf2csv
 
 # ⚙️ Installation
 
-## Local (Python)
+## Local (Python) 
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e .
 python -m cis_pdf2csv --help
 ```
 
