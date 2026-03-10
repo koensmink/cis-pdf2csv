@@ -6,6 +6,7 @@
 ![Status](https://img.shields.io/badge/status-active-success)
 ![Platform](https://img.shields.io/badge/platform-Windows%20Server%202025-lightgrey)
 
+
 Convert **CIS Benchmark PDFs** into structured data and generate **Microsoft Intune baseline configurations**.
 
 The project provides a hybrid architecture combining:
@@ -27,6 +28,7 @@ The following pipeline shows how CIS benchmarks are transformed into Intune base
 
 ![Policy Generation](docs/policy_generation.svg)
 
+![Coverage Lifecycle](docs/coverage_lifecycle.svg)
 ---
 
 # Key Features
