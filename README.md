@@ -1,4 +1,3 @@
-
 # cis-pdf2csv
 ### CIS Benchmark Parser & Intune Baseline Generator
 
@@ -16,7 +15,25 @@ The project provides a hybrid architecture combining:
 - rule‑based Intune policy generation
 - optional LLM‑assisted mapping suggestions
 
-This enables automated transformation of **CIS hardening benchmarks → Intune baseline artifacts**.
+---
+
+# Architecture
+
+The following pipeline shows how CIS benchmarks are transformed into Intune baseline artifacts.
+
+![Architecture](docs/architecture.svg)
+
+Pipeline overview:
+
+CIS Benchmark PDF  
+→ CIS Parser  
+→ JSONL Control Dataset  
+→ Normalizer  
+→ Value Parser  
+→ Rule Engine  
+→ Baseline + Manual Review  
+→ LLM Suggestion Engine  
+→ Suggested mappings
 
 ---
 
@@ -40,6 +57,42 @@ Output format:
 
 ```
 JSONL (one control per line)
+```
+
+---
+
+# Example Mapping (CIS → Intune)
+
+Example CIS control:
+
+```
+CIS Control ID: 2.3.7.3
+Title: Interactive logon: Do not display last signed-in
+Recommendation: Enabled
+```
+
+Resulting Intune mapping:
+
+| Field | Value |
+|------|------|
+| Implementation | Settings Catalog |
+| Intune Area | Local Policies / Security Options |
+| Setting Name | Interactive logon: Do not display last signed-in |
+| Value | Enabled |
+| Value Type | Boolean |
+| Source | Deterministic Rule Pack |
+
+Example JSON output:
+
+```json
+{
+  "cis_id": "2.3.7.3",
+  "implementation_type": "settings_catalog",
+  "intune_area": "Local Policies/Security Options",
+  "setting_name": "Interactive logon: Do not display last signed-in",
+  "value_kind": "boolean",
+  "value": true
+}
 ```
 
 ---
@@ -210,6 +263,42 @@ Generated artifacts:
 | manual_review.csv | controls needing review |
 | intune_policies.json | structured policy data |
 | suggested_mappings.jsonl | LLM mapping suggestions |
+
+---
+
+# Container Usage
+
+Build container:
+
+Docker
+
+```
+docker build -t cis-pdf2csv .
+```
+
+Podman
+
+```
+podman build -t cis-pdf2csv .
+```
+
+Run parser:
+
+```
+podman run --rm -v "${PWD}:/work:Z" -w /work cis-pdf2csv python -m cis_pdf2csv.cli benchmark.pdf -o controls.jsonl
+```
+
+Run mapper:
+
+```
+podman run --rm -v "${PWD}:/work:Z" -w /work cis-pdf2csv python -m cis_pdf2csv.intune_mapper.cli controls.jsonl -o intune_out
+```
+
+Enable LLM suggestions:
+
+```
+podman run --rm -e OPENAI_API_KEY=$OPENAI_API_KEY -v "${PWD}:/work:Z" -w /work cis-pdf2csv python -m cis_pdf2csv.intune_mapper.cli controls.jsonl -o intune_out --llm-fallback
+```
 
 ---
 
