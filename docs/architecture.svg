@@ -1,0 +1,119 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900">
+<defs>
+<style>
+.title { font-family:Segoe UI,Arial; font-size:36px; fill:#7dd3fc; font-weight:700; }
+.subtitle { font-family:Segoe UI,Arial; font-size:16px; fill:#94a3b8; }
+.boxTitle { font-family:Segoe UI,Arial; font-size:20px; fill:white; font-weight:600; }
+.boxText { font-family:Segoe UI,Arial; font-size:14px; fill:#e2e8f0; }
+.section { font-family:Segoe UI,Arial; font-size:18px; fill:#e2e8f0; font-weight:600; }
+</style>
+
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#020617"/>
+<stop offset="100%" stop-color="#0f172a"/>
+</linearGradient>
+
+<linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#2563eb"/>
+<stop offset="100%" stop-color="#38bdf8"/>
+</linearGradient>
+
+<linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#7c3aed"/>
+<stop offset="100%" stop-color="#c084fc"/>
+</linearGradient>
+
+<linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#059669"/>
+<stop offset="100%" stop-color="#34d399"/>
+</linearGradient>
+
+<linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#ea580c"/>
+<stop offset="100%" stop-color="#fb923c"/>
+</linearGradient>
+
+<marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+<polygon points="0 0, 6 3, 0 6" fill="#7dd3fc"/>
+</marker>
+
+</defs>
+
+<rect width="1500" height="900" fill="url(#bg)"/>
+
+<text x="60" y="80" class="title">CIS → Intune Baseline Generator</text>
+<text x="60" y="110" class="subtitle">Pipeline architecture for deterministic CIS security mapping and Intune baseline generation</text>
+
+<!-- Pipeline -->
+<rect x="60" y="180" width="200" height="120" rx="18" fill="url(#blue)"/>
+<text x="80" y="220" class="boxTitle">CIS Benchmark</text>
+<text x="80" y="250" class="boxText">PDF security baseline</text>
+<text x="80" y="270" class="boxText">Windows / macOS</text>
+
+<rect x="300" y="180" width="200" height="120" rx="18" fill="url(#green)"/>
+<text x="320" y="220" class="boxTitle">Parser</text>
+<text x="320" y="250" class="boxText">Extract controls</text>
+<text x="320" y="270" class="boxText">audit + remediation</text>
+
+<rect x="540" y="180" width="220" height="120" rx="18" fill="url(#purple)"/>
+<text x="560" y="220" class="boxTitle">Normalizer</text>
+<text x="560" y="250" class="boxText">Clean titles</text>
+<text x="560" y="270" class="boxText">Remove PDF artifacts</text>
+
+<rect x="800" y="180" width="200" height="120" rx="18" fill="url(#orange)"/>
+<text x="820" y="220" class="boxTitle">Value Parser</text>
+<text x="820" y="250" class="boxText">Enabled / Disabled</text>
+<text x="820" y="270" class="boxText">Threshold parsing</text>
+
+<rect x="1040" y="180" width="240" height="120" rx="18" fill="url(#blue)"/>
+<text x="1060" y="220" class="boxTitle">Rule Engine</text>
+<text x="1060" y="250" class="boxText">Deterministic mapping</text>
+<text x="1060" y="270" class="boxText">Intune policy output</text>
+
+<!-- arrows -->
+<line x1="260" y1="240" x2="300" y2="240" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+<line x1="500" y1="240" x2="540" y2="240" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+<line x1="760" y1="240" x2="800" y2="240" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+<line x1="1000" y1="240" x2="1040" y2="240" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+
+<!-- rule pack section -->
+<text x="60" y="380" class="section">Windows Rule Packs</text>
+
+<rect x="60" y="400" width="180" height="70" rx="12" fill="#1e293b"/>
+<text x="80" y="435" class="boxText">Account policies</text>
+
+<rect x="260" y="400" width="180" height="70" rx="12" fill="#1e293b"/>
+<text x="290" y="435" class="boxText">Audit policy</text>
+
+<rect x="460" y="400" width="180" height="70" rx="12" fill="#1e293b"/>
+<text x="490" y="435" class="boxText">Security options</text>
+
+<rect x="660" y="400" width="180" height="70" rx="12" fill="#1e293b"/>
+<text x="705" y="435" class="boxText">Defender</text>
+
+<rect x="860" y="400" width="180" height="70" rx="12" fill="#1e293b"/>
+<text x="905" y="435" class="boxText">Firewall</text>
+
+<!-- outputs -->
+<text x="60" y="540" class="section">Generated Artifacts</text>
+
+<rect x="60" y="560" width="260" height="70" rx="12" fill="#0ea5e9"/>
+<text x="90" y="600" class="boxText">baseline.csv</text>
+
+<rect x="340" y="560" width="260" height="70" rx="12" fill="#ef4444"/>
+<text x="370" y="600" class="boxText">manual_review.csv</text>
+
+<rect x="620" y="560" width="260" height="70" rx="12" fill="#22c55e"/>
+<text x="650" y="600" class="boxText">intune_policies.json</text>
+
+<!-- llm -->
+<text x="980" y="540" class="section">LLM Suggestion Engine</text>
+
+<rect x="980" y="560" width="360" height="120" rx="16" fill="#1e293b"/>
+<text x="1000" y="600" class="boxTitle">AI Assisted Mapping</text>
+<text x="1000" y="630" class="boxText">Analyzes manual_review controls</text>
+<text x="1000" y="650" class="boxText">Suggests Intune policy mappings</text>
+<text x="1000" y="670" class="boxText">Requires manual validation</text>
+
+</svg>
