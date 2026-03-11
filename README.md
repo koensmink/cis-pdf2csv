@@ -295,6 +295,63 @@ podman run --rm -e OPENAI_API_KEY=$OPENAI_API_KEY -v "${PWD}:/work:Z" -w /work c
 
 ---
 
+# 🔍 Diff benchmark versions
+
+Python PDF → JSONL
+
+```bash
+python -m cis_pdf2csv.diff v1.jsonl v2.jsonl -o changes.csv --report report.md --full-report report_full.md
+```
+
+Python Diff uitvoeren
+
+```  bash
+python -m cis_pdf2csv.diff v1.jsonl v2.jsonl \
+-o changes.csv \
+--report report.md \
+--full-report report_full.md
+```
+Export baseline 1:
+
+```bash
+docker run --rm -v "$PWD:/work" -w /work cis-pdf2csv ./benchmark_v1.pdf -p L1 -o v1.jsonl --format jsonl
+```
+
+```bash
+podman run --rm -v "$PWD:/work:Z" -w /work cis-pdf2csv ./benchmark_v1.pdf -p L1 -o v1.jsonl --format jsonl
+```
+Export baseline 2:
+
+```bash
+docker run --rm -v "$PWD:/work" -w /work cis-pdf2csv ./benchmark_v2.pdf -p L1 -o v2.jsonl --format jsonl
+```
+
+```bash
+podman run --rm -v "$PWD:/work:Z" -w /work cis-pdf2csv ./benchmark_v2.pdf -p L1 -o v2.jsonl --format jsonl
+```
+
+Run diff:
+
+```bash
+docker run --rm -v "$PWD:/work" -w /work --entrypoint python cis-pdf2csv -m cis_pdf2csv.diff v1.jsonl v2.jsonl -o changes.csv --report report.md --full-report report_full.md
+```
+
+```bash
+podman run --rm -v "$PWD:/work:Z" -w /work --entrypoint python cis-pdf2csv -m cis_pdf2csv.diff v1.jsonl v2.jsonl -o changes.csv --report report.md --full-report report_full.md
+```
+
+> Note: `:Z` on Podman volume mounts is recommended on SELinux-enabled hosts.
+
+Example output:
+
+```
+changes: 365
+added: 81
+removed: 76
+changed: 208
+```
+---
+
 ## Enable LLM Suggestions
 
 ```
