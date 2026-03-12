@@ -56,6 +56,7 @@ def _canonicalize(text: str) -> str:
     - bullet formatting
     - spacing before punctuation
     - newline flattening artefacts
+    - PDF footer/page number artefacts
     """
     if not text:
         return ""
@@ -63,7 +64,10 @@ def _canonicalize(text: str) -> str:
     text = text.lower()
     text = text.replace("\r\n", "\n").replace("\r", "\n")
 
-    # normalize bullets / list markers
+    # remove PDF page markers like "Page 403"
+    text = re.sub(r"\bpage\s+\d+\b", " ", text, flags=re.IGNORECASE)
+
+    # remove common bullet characters
     text = re.sub(r"[•◦▪■]\s*", "", text)
 
     # normalize whitespace
