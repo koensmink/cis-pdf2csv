@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -46,6 +47,32 @@ def _norm(v) -> str:
     if not isinstance(v, str):
         return str(v)
     return v.strip()
+
+
+def _canonicalize(text: str) -> str:
+    """
+    Normalize text before diffing to reduce false positives caused by:
+    - whitespace differences
+    - bullet formatting
+    - spacing before punctuation
+    - newline flattening artefacts
+    """
+    if not text:
+        return ""
+
+    text = text.lower()
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+
+    # normalize bullets / list markers
+    text = re.sub(r"[•◦▪■]\s*", "", text)
+
+    # normalize whitespace
+    text = re.sub(r"\s+", " ", text)
+
+    # remove space before punctuation
+    text = re.sub(r"\s+([.,;:])", r"\1", text)
+
+    return text.strip()
 
 
 def _shorten(text: str, max_len: int = 240) -> str:
@@ -106,14 +133,17 @@ def diff_records(old_rows: List[dict], new_rows: List[dict]) -> List[dict]:
         field_diffs = {}
 
         for field in DIFF_FIELDS:
-            old_val = _norm(old.get(field))
-            new_val = _norm(new.get(field))
+            old_raw = _norm(old.get(field))
+            new_raw = _norm(new.get(field))
+
+            old_val = _canonicalize(old_raw)
+            new_val = _canonicalize(new_raw)
 
             if old_val != new_val:
                 changed_fields.append(field)
                 field_diffs[field] = {
-                    "old": old_val,
-                    "new": new_val,
+                    "old": old_raw,
+                    "new": new_raw,
                 }
 
         if changed_fields:
